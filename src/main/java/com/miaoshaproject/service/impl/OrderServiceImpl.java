@@ -44,26 +44,26 @@ public class OrderServiceImpl implements OrderService {
         //1、校验下单状态，查看下单的商品是否存在，用户是否合法，购买数量是否正确
         ItemModel itemModel = itemService.getItemById(itemId);
         if (itemModel == null){
-            throw new BusinessException(EmBusinessError.PARAMETER_VALIDATION_ERROR,"商品信息不存在");
+            throw new BusinessException(EmBusinessError.ORDER_ITEM_NOT_EXIST);
         }
 
         UserModel userModel = userService.getUserById(userId);
         if (userModel == null){
-            throw new BusinessException(EmBusinessError.PARAMETER_VALIDATION_ERROR,"用户信息不存在");
+            throw new BusinessException(EmBusinessError.ORDER_USER_NOT_EXIST);
         }
 
         if(amount <= 0 || amount > 99 ){
-            throw new BusinessException(EmBusinessError.PARAMETER_VALIDATION_ERROR,"数量信息不正确");
+            throw new BusinessException(EmBusinessError.ORDER_AMOUNT_ERROR);
         }
 
         //校验活动信息
         if (promoId != null){
             //(1)校验对应活动是否存在这个商品
             if (promoId.intValue()!=itemModel.getPromoModel().getId()){
-                throw new BusinessException(EmBusinessError.PARAMETER_VALIDATION_ERROR,"活动信息不正确");
+                throw new BusinessException(EmBusinessError.MIAOSHA_INFO_ERROR);
                 //(2)校验活动是否进行中
             }else if (itemModel.getPromoModel().getStatus().intValue()!=2){
-                throw new BusinessException(EmBusinessError.PARAMETER_VALIDATION_ERROR,"活动没开始");
+                throw new BusinessException(EmBusinessError.MIAOSHA_TIME_ERROR);
             }
         }
         //2、落单减库存，支付减库存
